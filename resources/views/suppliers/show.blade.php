@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Supplier: ' . $supplier->name)
+@section('title', 'Detail Supplier — ' . $supplier->name)
 @section('page_title', 'Profil & Katalog Pemasok')
 
 @section('content')
@@ -8,41 +8,41 @@
 
     <!-- Top Action Toolbar -->
     <div class="d-flex justify-content-between align-items-center">
-        <a href="{{ route('suppliers.index') }}" class="btn btn-sm btn-light border">
-            <i class="bi bi-arrow-left"></i> Kembali ke Daftar Supplier
+        <a href="{{ route('suppliers.index') }}" class="btn btn-sm btn-light border py-1 px-3">
+            &larr; Kembali ke Daftar Supplier
         </a>
         @if(Auth::user()->isAdmin())
-            <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-primary">
-                <i class="bi bi-pencil"></i> Edit Data Supplier
+            <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-primary py-1 px-3 shadow-sm">
+                Edit Data Supplier
             </a>
         @endif
     </div>
 
     <!-- Supplier Info Card -->
     <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
+        <div class="card-body p-4 p-lg-5">
             <div class="row g-4 align-items-center">
                 <div class="col-lg-7">
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 mb-2">
+                    <span class="badge bg-light text-primary border px-2 py-1 mb-2" style="font-size: 0.75rem;">
                         Mitra Vendor Terdaftar
                     </span>
                     <h3 class="fw-bold mb-1 text-dark">{{ $supplier->name }}</h3>
-                    <p class="text-muted mb-3"><i class="bi bi-person-badge me-1"></i>PIC / Narahubung: <strong>{{ $supplier->contact_name ?: 'Tidak tertera' }}</strong></p>
+                    <p class="text-muted mb-4">PIC / Narahubung: <strong class="text-dark">{{ $supplier->contact_name ?: 'Tidak tertera' }}</strong></p>
 
                     <div class="row g-3">
                         <div class="col-sm-6">
-                            <div class="p-3 bg-light rounded-3">
+                            <div class="p-3 bg-light rounded-3 border">
                                 <span class="text-muted small d-block mb-1">Telepon / WhatsApp</span>
-                                <span class="fw-bold text-dark fs-6">
-                                    <i class="bi bi-telephone text-primary me-1"></i>{{ $supplier->phone ?: '-' }}
+                                <span class="fw-bold text-dark fs-6 font-monospace">
+                                    {{ $supplier->phone ?: '-' }}
                                 </span>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="p-3 bg-light rounded-3">
+                            <div class="p-3 bg-light rounded-3 border">
                                 <span class="text-muted small d-block mb-1">Email Korespondensi</span>
                                 <span class="fw-bold text-dark fs-6 text-truncate d-block">
-                                    <i class="bi bi-envelope text-primary me-1"></i>{{ $supplier->email ?: '-' }}
+                                    {{ $supplier->email ?: '-' }}
                                 </span>
                             </div>
                         </div>
@@ -50,13 +50,13 @@
                 </div>
 
                 <div class="col-lg-5">
-                    <div class="p-3 border rounded-3 bg-light">
-                        <h6 class="fw-bold mb-2"><i class="bi bi-geo-alt text-danger me-1"></i>Alamat Operasional</h6>
+                    <div class="p-4 border rounded-3 bg-light">
+                        <h6 class="fw-bold mb-2 text-dark">Alamat Kantor / Pergudangan</h6>
                         <p class="text-muted small mb-0">{{ $supplier->address ?: 'Alamat belum dilengkapi.' }}</p>
-                        <hr class="my-2">
-                        <div class="d-flex justify-content-between align-items-center small">
-                            <span class="text-muted">Total Varian Pasokan:</span>
-                            <span class="badge bg-dark fs-6">{{ $supplier->products->count() }} Jenis Produk</span>
+                        <hr class="my-3" style="border-color: #e2e8f0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Total Varian Pasokan:</span>
+                            <span class="badge bg-dark text-white px-3 py-1 fs-6">{{ $supplier->products->count() }} Jenis Produk</span>
                         </div>
                     </div>
                 </div>
@@ -64,23 +64,25 @@
         </div>
     </div>
 
-    <!-- Catalog of Supplied Products -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h6 class="fw-bold mb-0"><i class="bi bi-box-seam text-primary me-2"></i>Katalog Produk yang Dipasok oleh {{ $supplier->name }}</h6>
+    <!-- Catalog of Supplied Products with Product Thumbnails -->
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-transparent py-3">
+            <h6 class="fw-bold mb-0 text-dark">Katalog Produk Pasokan {{ $supplier->name }}</h6>
+            <small class="text-muted">Daftar item yang dipasok oleh vendor ini beserta harga kulakan & margin</small>
         </div>
         <div class="table-responsive">
-            <table class="table align-middle table-hover mb-0">
-                <thead class="table-light">
+            <table class="table align-middle table-hover">
+                <thead>
                     <tr>
+                        <th style="width: 70px;">Visual</th>
                         <th>SKU</th>
                         <th>Nama Produk</th>
                         <th>Kategori</th>
-                        <th class="text-end">Harga Pasokan (Beli)</th>
-                        <th class="text-end">Harga Jual Retail</th>
-                        <th class="text-end">Margin Keuntungan</th>
+                        <th class="text-end">Harga Beli</th>
+                        <th class="text-end">Harga Jual</th>
+                        <th class="text-end">Estimasi Margin</th>
                         <th class="text-center">Sisa Stok</th>
-                        <th class="text-end px-3">Aksi</th>
+                        <th class="text-end px-3">Tindakan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,47 +93,47 @@
                         @endphp
                         <tr>
                             <td>
-                                <span class="badge bg-light text-dark font-monospace border">{{ $product->sku }}</span>
+                                <div class="product-thumb-container">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+                                </div>
                             </td>
                             <td>
-                                <a href="{{ route('products.show', $product) }}" class="fw-bold text-dark text-decoration-none">
+                                <span class="badge-sku">{{ $product->sku }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('products.show', $product) }}" class="fw-bold text-dark text-decoration-none hover-primary">
                                     {{ $product->name }}
                                 </a>
                             </td>
                             <td>
-                                <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.75rem;">
                                     {{ $product->category->name ?? '-' }}
                                 </span>
                             </td>
-                            <td class="text-end fw-semibold">
+                            <td class="text-end fw-semibold text-dark">
                                 Rp {{ number_format($buyPrice, 0, ',', '.') }}
                             </td>
                             <td class="text-end fw-semibold text-primary">
                                 Rp {{ number_format($product->price, 0, ',', '.') }}
                             </td>
                             <td class="text-end">
-                                <span class="badge {{ $margin >= 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger' }} px-2 py-1">
-                                    Rp {{ number_format($margin, 0, ',', '.') }}
+                                <span class="badge {{ $margin > 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary' }} px-2 py-1">
+                                    +Rp {{ number_format($margin, 0, ',', '.') }}
                                 </span>
                             </td>
-                            <td class="text-center fw-bold {{ $product->stock <= $product->minimum_stock ? 'text-danger' : 'text-success' }}">
+                            <td class="text-center fw-bold fs-6 {{ $product->stock <= $product->minimum_stock ? 'text-warning' : 'text-success' }}">
                                 {{ number_format($product->stock) }}
                             </td>
                             <td class="text-end px-3">
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('products.show', $product) }}" class="btn btn-light border" title="Lihat Detail Produk">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('stock.in', ['product_id' => $product->id]) }}" class="btn btn-light border text-success" title="Pesan Stok Masuk">
-                                        <i class="bi bi-box-arrow-in-down"></i>
-                                    </a>
-                                </div>
+                                <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 0.78rem;">
+                                    Detail
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
-                                Belum ada produk yang dikaitkan dengan supplier ini.
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                Belum ada produk yang ditautkan ke supplier ini.
                             </td>
                         </tr>
                     @endforelse

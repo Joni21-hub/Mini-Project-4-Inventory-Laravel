@@ -138,7 +138,7 @@ class InventorySystemTest extends TestCase
     {
         $staff = User::where('role', 'staff')->first();
 
-        $response = $this->actingAs($staff)->get('/products-create');
+        $response = $this->actingAs($staff)->get('/products/create');
         $response->assertStatus(403);
     }
 
@@ -150,5 +150,56 @@ class InventorySystemTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+    }
+
+    /**
+     * Sesuai Slide 48: Demonstrasi satu alur lengkap:
+     * membuka form -> validasi -> simpan -> redirect -> tampilkan data.
+     */
+    public function test_complete_crud_flow_open_form_validate_store_redirect_and_display_data(): void
+    {
+        $admin = User::where('role', 'admin')->first();
+        $category = Category::first();
+
+        // 1. Membuka form tambah produk
+        $formResponse = $this->actingAs($admin)->get('/products/create');
+        $formResponse->assertStatus(200);
+        $formResponse->assertSee('Tambah Produk Baru');
+
+        // 2. Validasi error jika input kosong/tidak valid
+        $invalidResponse = $this->actingAs($admin)->post('/products', []);
+        $invalidResponse->assertSessionHasErrors(['sku', 'name', 'category_id', 'price', 'stock', 'minimum_stock']);
+
+        // 3. Simpan data valid
+        $newProductData = [
+            'sku' => 'TEST-FLOW-001',
+            'name' => 'Demo Produk Alur Lengkap',
+            'category_id' => $category->id,
+            'price' => 750000,
+            'stock' => 20,
+            'minimum_stock' => 5,
+        ];
+
+        // 4. Redirect setelah simpan berhasil
+        $storeResponse = $this->actingAs($admin)->post('/products', $newProductData);
+        $storeResponse->assertRedirect('/products');
+        $storeResponse->assertSessionHas('success');
+
+        // Database assertions
+        $this->assertDatabaseHas('products', [
+            'sku' => 'TEST-FLOW-001',
+            'name' => 'Demo Produk Alur Lengkap',
+        ]);
+
+        // 5. Tampilkan data pada listing & detail
+        $listResponse = $this->actingAs($admin)->get('/products?search=TEST-FLOW-001');
+        $listResponse->assertStatus(200);
+        $listResponse->assertSee('TEST-FLOW-001');
+        $listResponse->assertSee('Demo Produk Alur Lengkap');
+
+        $createdProduct = Product::where('sku', 'TEST-FLOW-001')->firstOrFail();
+        $showResponse = $this->actingAs($admin)->get('/products/' . $createdProduct->id);
+        $showResponse->assertStatus(200);
+        $showResponse->assertSee('Demo Produk Alur Lengkap');
     }
 }

@@ -1,111 +1,123 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Produk: ' . $product->name)
-@section('page_title', 'Ubah Informasi Produk')
+@section('title', 'Edit Produk — ' . $product->name)
+@section('page_title', 'Form Perubahan Data Produk')
 
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="fw-bold mb-0"><i class="bi bi-pencil-square text-primary me-2"></i>Ubah Produk: {{ $product->name }}</h6>
+                    <h6 class="fw-bold mb-0 text-dark">Perbarui Data: {{ $product->name }}</h6>
                     <small class="text-muted font-monospace">SKU: {{ $product->sku }}</small>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-eye"></i> Detail
+                    <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-light border py-1 px-3">
+                        Lihat Detail
                     </a>
-                    <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border">
-                        <i class="bi bi-arrow-left"></i> Kembali
+                    <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border py-1 px-3">
+                        &larr; Kembali
                     </a>
                 </div>
             </div>
 
-            <div class="card-body p-4">
+            <div class="card-body p-4 p-lg-5">
                 <form action="{{ route('products.update', $product) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <h6 class="fw-bold text-secondary text-uppercase small mb-3">1. Informasi Utama Produk</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="sku" class="form-label small fw-semibold">Kode SKU <span class="text-danger">*</span></label>
-                            <input type="text" name="sku" id="sku" class="form-control font-monospace @error('sku') is-invalid @enderror" 
-                                   value="{{ old('sku', $product->sku) }}" required>
-                            @error('sku')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <!-- Section 1 -->
+                    <div class="mb-4">
+                        <span class="badge bg-light text-primary border px-2 py-1 mb-2 fw-bold" style="font-size: 0.72rem;">BAGIAN 1</span>
+                        <h6 class="fw-bold text-dark mb-3">Informasi Utama Produk</h6>
 
-                        <div class="col-md-5">
-                            <label for="name" class="form-label small fw-semibold">Nama Produk <span class="text-danger">*</span></label>
-                            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" 
-                                   value="{{ old('name', $product->name) }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="sku" class="form-label">Kode SKU <span class="text-danger">*</span></label>
+                                <input type="text" name="sku" id="sku" class="form-control font-monospace @error('sku') is-invalid @enderror" 
+                                       value="{{ old('sku', $product->sku) }}" required>
+                                @error('sku')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                        <div class="col-md-3">
-                            <label for="category_id" class="form-label small fw-semibold">Kategori <span class="text-danger">*</span></label>
-                            <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <div class="col-md-5">
+                                <label for="name" class="form-label">Nama Produk <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" 
+                                       value="{{ old('name', $product->name) }}" required>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="category_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
-                    <h6 class="fw-bold text-secondary text-uppercase small mb-3">2. Harga & Tingkat Persediaan</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="price" class="form-label small fw-semibold">Harga Jual Satuan (IDR) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">Rp</span>
-                                <input type="number" step="100" min="0" name="price" id="price" 
-                                       class="form-control @error('price') is-invalid @enderror" 
-                                       value="{{ old('price', $product->price) }}" required>
-                            </div>
-                            @error('price')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <hr class="my-4" style="border-color: #f1f5f9;">
 
-                        <div class="col-md-4">
-                            <label class="form-label small fw-semibold">Stok Saat Ini (Tercatat)</label>
-                            <div class="form-control bg-light d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">{{ number_format($product->stock) }} unit</span>
-                                <span class="badge {{ $product->stock <= 0 ? 'bg-danger' : ($product->stock <= $product->minimum_stock ? 'bg-warning' : 'bg-success') }}">
-                                    {{ $product->stock_status }}
-                                </span>
-                            </div>
-                            <div class="form-text small">Penambahan atau pengurangan stok dilakukan via menu <strong>Barang Masuk / Keluar</strong> demi menjaga histori mutasi.</div>
-                        </div>
+                    <!-- Section 2 -->
+                    <div class="mb-4">
+                        <span class="badge bg-light text-primary border px-2 py-1 mb-2 fw-bold" style="font-size: 0.72rem;">BAGIAN 2</span>
+                        <h6 class="fw-bold text-dark mb-3">Harga Jual & Parameter Stok</h6>
 
-                        <div class="col-md-4">
-                            <label for="minimum_stock" class="form-label small fw-semibold">Batas Minimum Stok <span class="text-danger">*</span></label>
-                            <input type="number" min="0" name="minimum_stock" id="minimum_stock" 
-                                   class="form-control @error('minimum_stock') is-invalid @enderror" 
-                                   value="{{ old('minimum_stock', $product->minimum_stock) }}" required>
-                            @error('minimum_stock')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="price" class="form-label">Harga Jual Satuan (IDR) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted">Rp</span>
+                                    <input type="number" step="100" min="0" name="price" id="price" 
+                                           class="form-control @error('price') is-invalid @enderror" 
+                                           value="{{ old('price', $product->price) }}" required>
+                                </div>
+                                @error('price')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Saldo Stok Saat Ini</label>
+                                <div class="form-control bg-light d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-dark">{{ number_format($product->stock) }} Unit</span>
+                                    <span class="badge bg-light text-secondary border">Terkunci Audit</span>
+                                </div>
+                                <div class="form-text small">Perubahan saldo fisik wajib lewat transaksi Barang Masuk / Keluar.</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="minimum_stock" class="form-label">Batas Minimum Stok <span class="text-danger">*</span></label>
+                                <input type="number" min="0" name="minimum_stock" id="minimum_stock" 
+                                       class="form-control @error('minimum_stock') is-invalid @enderror" 
+                                       value="{{ old('minimum_stock', $product->minimum_stock) }}" required>
+                                @error('minimum_stock')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
-                    <h6 class="fw-bold text-secondary text-uppercase small mb-3">3. Hubungan Pemasok (Suppliers)</h6>
-                    <div class="card bg-light border mb-4">
-                        <div class="card-body p-3">
-                            <p class="small text-muted mb-3">
-                                Atur mitra supplier yang menyediakan produk ini beserta harga belinya.
-                            </p>
+                    <hr class="my-4" style="border-color: #f1f5f9;">
 
+                    <!-- Section 3 -->
+                    <div class="mb-4">
+                        <span class="badge bg-light text-primary border px-2 py-1 mb-2 fw-bold" style="font-size: 0.72rem;">BAGIAN 3</span>
+                        <h6 class="fw-bold text-dark mb-2">Sinkronisasi Pemasok (Suppliers)</h6>
+                        <p class="small text-muted mb-3">Kelola mitra supplier aktif dan perbarui harga beli per unit.</p>
+
+                        <div class="p-3 bg-light rounded-3 border">
                             <div class="row g-2">
                                 @forelse($suppliers as $supplier)
                                     @php
@@ -114,21 +126,21 @@
                                         $currentPrice = $linkedSupplier ? $linkedSupplier->pivot->supplier_price : '';
                                     @endphp
                                     <div class="col-md-6">
-                                        <div class="p-2 border rounded bg-white d-flex align-items-center justify-content-between gap-2">
+                                        <div class="p-2 border rounded-2 bg-white d-flex align-items-center justify-content-between gap-2">
                                             <div class="form-check mb-0">
                                                 <input class="form-check-input" type="checkbox" 
                                                        name="suppliers[]" value="{{ $supplier->id }}" id="sup_{{ $supplier->id }}"
                                                        {{ $isLinked ? 'checked' : '' }}
                                                        onchange="togglePriceInput('{{ $supplier->id }}')">
-                                                <label class="form-check-label fw-semibold small" for="sup_{{ $supplier->id }}">
+                                                <label class="form-check-label fw-semibold small text-dark" for="sup_{{ $supplier->id }}">
                                                     {{ $supplier->name }}
                                                 </label>
                                             </div>
                                             <div style="width: 140px;">
                                                 <div class="input-group input-group-sm">
-                                                    <span class="input-group-text py-0 px-1 bg-light text-muted">Rp</span>
+                                                    <span class="input-group-text py-0 px-2 bg-light text-muted" style="font-size: 0.75rem;">Rp</span>
                                                     <input type="number" name="supplier_prices[{{ $supplier->id }}]" 
-                                                           id="price_input_{{ $supplier->id }}" class="form-control py-0" 
+                                                           id="price_input_{{ $supplier->id }}" class="form-control py-1" 
                                                            placeholder="Harga Beli" 
                                                            value="{{ old("supplier_prices.{$supplier->id}", $currentPrice) }}"
                                                            {{ $isLinked ? '' : 'disabled' }}>
@@ -137,16 +149,16 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="col-12 text-muted small">Belum ada supplier terdaftar.</div>
+                                    <div class="col-12 text-muted small py-2">Belum ada supplier terdaftar.</div>
                                 @endforelse
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-end gap-2 pt-3">
                         <a href="{{ route('products.index') }}" class="btn btn-light border px-4">Batal</a>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="bi bi-check-circle me-1"></i> Simpan Perubahan
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            Simpan Perubahan
                         </button>
                     </div>
                 </form>
